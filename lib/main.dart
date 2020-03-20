@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'dog_model.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
