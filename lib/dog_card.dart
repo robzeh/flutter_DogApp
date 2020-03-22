@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'dog_model.dart';
+import 'dog_detail_page.dart';
 
 class DogCard extends StatefulWidget {
   final Dog dog;
@@ -30,13 +31,38 @@ class _DogCardState extends State<DogCard> {
   }
 
   Widget get dogImage {
-    return Container(
+    var dogAvatar = Container(
       width: 100.0,
       height: 100.0,
       decoration: BoxDecoration(
           shape: BoxShape.circle,
           image: DecorationImage(
               fit: BoxFit.cover, image: NetworkImage(renderUrl ?? ''))),
+    );
+
+    var placeholder = Container(
+      width: 100.0,
+      height: 100.0,
+      decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Colors.black54, Colors.black, Colors.blueGrey[600]])),
+      alignment: Alignment.center,
+      child: Text(
+        "Dog",
+        textAlign: TextAlign.center,
+      ),
+    );
+
+    return AnimatedCrossFade(
+      firstChild: placeholder,
+      secondChild: dogAvatar,
+      crossFadeState: renderUrl == null
+          ? CrossFadeState.showFirst
+          : CrossFadeState.showSecond,
+      duration: Duration(microseconds: 1000),
     );
   }
 
@@ -74,20 +100,43 @@ class _DogCardState extends State<DogCard> {
 
   _DogCardState(this.dog);
 
+  showDogDetailPage() {
+    // Navigator.of(context) accesses the current app's navigator.
+    // Navigators can 'push' new routes onto the stack,
+    // as well as pop routes off the stack.
+    //
+    // This is the easiest way to build a new page on the fly
+    // and pass that page some state from the current page.
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        // builder methods always take context!
+        builder: (context) {
+          return DogDetailPage(dog);
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(),
-      child: Container(
-        height: 115.0,
-        child: Stack(
-          children: <Widget>[
-            Positioned(
-              left: 50.0,
-              child: dogCard,
-            ),
-            Positioned(top: 7.5, child: dogImage)
-          ],
+    // InkWell is a special Material widget that makes its children tappable
+    // and adds Material Design ink ripple when tapped.
+    return InkWell(
+      // onTap is a callback that will be triggered when tapped.
+      onTap: showDogDetailPage,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        child: Container(
+          height: 115.0,
+          child: Stack(
+            children: <Widget>[
+              Positioned(
+                left: 50.0,
+                child: dogCard,
+              ),
+              Positioned(top: 7.5, child: dogImage),
+            ],
+          ),
         ),
       ),
     );
